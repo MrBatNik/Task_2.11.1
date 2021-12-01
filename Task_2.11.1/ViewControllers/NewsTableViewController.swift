@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 
 class NewsTableViewController: UITableViewController {
     
@@ -14,11 +13,9 @@ class NewsTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-//        fetchNews()
-        fetchNewsWithAlomofire()
+        fetchNews()
     }
 
-    // MARK: - Table view data source
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         news.count
     }
@@ -34,6 +31,7 @@ class NewsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "NewsDetailsViewController", sender: news[indexPath.row])
+        
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -48,24 +46,15 @@ class NewsTableViewController: UITableViewController {
 extension NewsTableViewController {
     
     private func fetchNews() {
-        NetworkManager.getData { news in
-            self.news = news
-            self.tableView.reloadData()
-        }
-    }
-    
-    private func fetchNewsWithAlomofire() {
-        AF.request("https://api.npoint.io/e7a66be6073ea4d5dea6")
-            .validate()
-            .responseJSON { dataResponse in
-                switch dataResponse.result {
-                    case .success(let value):
-                        self.news = News.getNews(from: value)
-                        self.tableView.reloadData()
-                    case .failure(let error):
-                        print(error)
-                }
+        NetworkManager.shared.getNewsWithAlamofire { result in
+            switch result {
+                case .success(let news):
+                    self.news = news
+                    self.tableView.reloadData()
+                case .failure(let error):
+                    print(error)
             }
+        }
     }
     
 }

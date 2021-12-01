@@ -5,27 +5,30 @@
 //  Created by Никита Бат on 27.11.2021.
 //
 
-import Foundation
+import Alamofire
+
+enum NetworkError: Error {
+    case invalidURL
+    case noData
+    case decodingError
+}
 
 class NetworkManager {
     
-    class func getData(completion: @escaping (([News]) -> Void)) {
-        guard let url = URL(string: "https://api.npoint.io/e7a66be6073ea4d5dea6") else { return }
-        
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            guard let data = data else {
-                print(error?.localizedDescription ?? "No error description")
-                return
-            }
-            do {
-                let news = try JSONDecoder().decode([News].self, from: data)
-                DispatchQueue.main.async {
-                    completion(news)
+    static let shared = NetworkManager()
+    
+    func getNewsWithAlamofire(completion: @escaping(Result<[News], NetworkError>) -> Void) {
+        AF.request("https://api.npoint.io/e7a66be6073ea4d5dea6")
+            .validate()
+            .responseJSON { dataResponse in
+                switch dataResponse.result {
+                    case .success(let value):
+                        let news = News.getNews(from: value)
+                        completion(.success(news))
+                    case .failure:
+                        completion(.failure(.decodingError))
                 }
-            } catch let error {
-                print(error.localizedDescription)
             }
-        }.resume()
     }
     
 }

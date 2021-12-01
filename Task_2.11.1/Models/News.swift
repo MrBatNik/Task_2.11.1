@@ -25,13 +25,8 @@ struct News: Decodable {
     
     static func getNews(from value: Any) -> [News] {
         guard let allNews = value as? [[String: Any]] else { return [] }
-        var myNews: [News] = []
         
-        for newsItem in allNews {
-            let news = News(newsItem: newsItem)
-            myNews.append(news)
-        }
-        return myNews
+        return allNews.compactMap { News(newsItem: $0) }
     }
     
 }
