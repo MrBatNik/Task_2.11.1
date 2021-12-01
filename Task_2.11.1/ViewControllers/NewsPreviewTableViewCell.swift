@@ -26,7 +26,7 @@ extension NewsPreviewTableViewCell {
         teaser.text = news.teaser
         
         DispatchQueue.global().async {
-            guard let url = URL(string: news.image) else { return }
+            guard let url = URL(string: news.image ?? "") else { return }
             guard let imageData = try? Data(contentsOf: url) else { return }
             DispatchQueue.main.async {
                 self.newsImage.image = UIImage(data: imageData)

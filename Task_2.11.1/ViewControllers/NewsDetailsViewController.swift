@@ -23,7 +23,7 @@ class NewsDetailsViewController: UIViewController {
         detailedDate.text = someNews.date
         newsText.text = someNews.text
         
-        guard let url = URL(string: someNews.image) else { return }
+        guard let url = URL(string: someNews.image ?? "") else { return }
         guard let imageData = try? Data(contentsOf: url) else { return }
         detailedImage.image = UIImage(data: imageData)
     }

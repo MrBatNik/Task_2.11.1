@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Alamofire
 
 class NewsTableViewController: UITableViewController {
     
@@ -13,7 +14,8 @@ class NewsTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchNews()
+//        fetchNews()
+        fetchNewsWithAlomofire()
     }
 
     // MARK: - Table view data source
@@ -50,6 +52,20 @@ extension NewsTableViewController {
             self.news = news
             self.tableView.reloadData()
         }
+    }
+    
+    private func fetchNewsWithAlomofire() {
+        AF.request("https://api.npoint.io/e7a66be6073ea4d5dea6")
+            .validate()
+            .responseJSON { dataResponse in
+                switch dataResponse.result {
+                    case .success(let value):
+                        self.news = News.getNews(from: value)
+                        self.tableView.reloadData()
+                    case .failure(let error):
+                        print(error)
+                }
+            }
     }
     
 }
